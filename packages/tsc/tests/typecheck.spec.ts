@@ -58,7 +58,7 @@ test(`vue-tsc`, () => {
 		  "test-workspace/tsc/_failed_fragment_props/main.vue(12,46): error TS2339: Property 'bar' does not exist on type '{ id: number; }'.",
 		  "test-workspace/tsc/_failed_fragment_props/main.vue(12,54): error TS2339: Property 'baz' does not exist on type '{ id: number; }'.",
 		  "test-workspace/tsc/_failed_fragment_props/main.vue(6,31): error TS2322: Type '{ id: number; }' is not assignable to type 'PropertyKey | undefined'.",
-		  "test-workspace/tsc/_failed_fragment_props/main.vue(9,32): error TS2353: Object literal may only specify known properties, and 'foo' does not exist in type 'HTMLAttributes & ReservedProps'.",
+		  "test-workspace/tsc/_failed_fragment_props/main.vue(9,32): error TS2353: Object literal may only specify known properties, and 'foo' does not exist in type 'HTMLAttributes & ReservedProps & __VLS_NativeListeners<HTMLAttributes & ReservedProps>'.",
 		  "test-workspace/tsc/_failed_unknownComponent/mixed.vue(16,10): error TS2322: Type 'number' is not assignable to type 'string'.",
 		  "test-workspace/tsc/_failed_unknownComponent/mixed.vue(17,19): error TS2353: Object literal may only specify known properties, and 'bar' does not exist in type '{ readonly foo: string; } & VNodeProps & AllowedComponentProps & ComponentCustomProps'.",
 		  "test-workspace/tsc/_failed_unknownComponent/permissive.vue(13,10): error TS2322: Type 'number' is not assignable to type 'string'.",

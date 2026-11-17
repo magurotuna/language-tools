@@ -683,6 +683,9 @@
 			"path": "./namespace-component/tsconfig.json"
 		},
 		{
+			"path": "./nativeListeners/tsconfig.json"
+		},
+		{
 			"path": "./no-script-block/tsconfig.json"
 		},
 		{

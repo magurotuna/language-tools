@@ -173,8 +173,39 @@ declare global {
 	function __VLS_functionalComponentArgsRest<T extends (...args: any) => any>(
 		t: T,
 	): __VLS_PadArgs<Parameters<T> extends [any, ...infer Rest] ? Rest : []>;
-	function __VLS_asFunctionalElement0<T>(tag: T, endTag?: T): (attrs: T) => void;
-	function __VLS_asFunctionalElement1<T>(tag: T, endTag?: T): (attrs: T & Record<string, unknown>) => void;
+	type __VLS_Characters<S extends string> = S extends `${infer C}${infer Rest}` ? C | __VLS_Characters<Rest> : never;
+	// the keys that `isOn` treats as listeners: `on`, then a character that is not a lowercase letter
+	type __VLS_IsListenerKey<K> = K extends `on${infer C}${string}`
+		? C extends __VLS_Characters<'abcdefghijklmnopqrstuvwxyz'> ? false : true
+		: false;
+	type __VLS_IsIdentical<X, Y> = (<V>() => V extends X ? 1 : 2) extends (<V>() => V extends Y ? 1 : 2) ? true
+		: false;
+	// `[P]` if `F` is `(payload: P) => void` (plus `undefined`), otherwise `never`;
+	// `__VLS_IsIdentical` does not compare `this` parameters, so they are checked separately
+	type __VLS_ListenerPayload<F> = NonNullable<F> extends (payload: infer P) => void
+		? unknown extends ThisParameterType<NonNullable<F>>
+			? __VLS_IsIdentical<NonNullable<F>, (payload: P) => void> extends true ? [P] : never
+		: never
+		: never;
+	// A native listener returns nothing that Vue uses, or a promise that Vue catches and passes to
+	// `app.config.errorHandler`. Only the changed keys are here, and the element helpers intersect
+	// this type with the attributes, so the other attributes keep their contextual types (TypeScript
+	// reads an `any` property of an intersection member as `unknown`). The template literal key makes
+	// the mapped type `Remapping`, so these properties do not add a second definition.
+	type __VLS_NativeListeners<T> = {
+		[
+			K in keyof T as __VLS_IsListenerKey<K> extends true
+				? [__VLS_ListenerPayload<T[K]>] extends [never] ? never : `${K & string}`
+				: never
+		]: __VLS_ListenerPayload<T[K]> extends [infer P]
+			? ((payload: P) => void) | ((payload: P) => Promise<unknown>) | Exclude<T[K], NonNullable<T[K]>>
+			: never;
+	};
+	function __VLS_asFunctionalElement0<T>(tag: T, endTag?: T): (attrs: T & __VLS_NativeListeners<T>) => void;
+	function __VLS_asFunctionalElement1<T>(
+		tag: T,
+		endTag?: T,
+	): (attrs: T & __VLS_NativeListeners<T> & Record<string, unknown>) => void;
 	function __VLS_asFunctionalSlot<S>(
 		slot: S,
 	): S extends (...args: any) => any ? (S extends () => infer R ? (props: {}) => R : S)
